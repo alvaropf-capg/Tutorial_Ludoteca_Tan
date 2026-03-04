@@ -48,6 +48,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     /**
      * {@inheritDoc}
+     * d
      */
     @Override
     public void delete(Long id) throws Exception {
