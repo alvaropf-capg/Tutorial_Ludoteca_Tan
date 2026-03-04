@@ -1,4 +1,4 @@
-package com.ccsw.tutorial.game.controller;
+package com.ccsw.tutorial.game;
 
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
@@ -39,6 +39,6 @@ public class GameController {
     @Operation(summary = "Save or Update", description = "Method that saves or updates a game")
     @RequestMapping(path = { "", "/{id" }, method = RequestMethod.PUT)
     public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
-        
+
     }
 }
