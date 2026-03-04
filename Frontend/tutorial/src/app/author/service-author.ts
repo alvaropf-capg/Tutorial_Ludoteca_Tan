@@ -4,22 +4,27 @@ import { AuthorPage } from './model/AuthorPage';
 import { AUTHOR_DATA } from './model/mock-authors';
 import { Pageable } from '../core/model/page/Pageable';
 import { Author } from './model/Author';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServiceAuthor {
-  constructor() {}
+  constructor(private http: HttpClient) {}
+
+  private baseUrl = 'http://localhost:8080/author';
 
   getAuthors(pageable: Pageable): Observable<AuthorPage>{
-    return of (AUTHOR_DATA);
+    return this.http.post<AuthorPage>(this.baseUrl, { pageable: pageable});
   }
 
-  saveAuthor(author: Author): Observable<void>{
-    return of (null);
+  saveAuthor(author: Author): Observable<Author> {
+    const { id } = author;
+    const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
+    return this.http.put<Author>(url, author);
   }
 
   deleteAuthor(idAuthor: number): Observable<void>{
-    return of (null);
+    return this.http.delete<void>(`${this.baseUrl}/${idAuthor}`);
   }
 }
