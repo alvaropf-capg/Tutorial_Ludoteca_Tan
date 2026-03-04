@@ -26,3 +26,4 @@ export class DialogConfirmationComponent {
     this.dialogRef.close(value);
   }
 }
+
