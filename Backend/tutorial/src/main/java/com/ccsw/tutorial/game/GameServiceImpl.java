@@ -1,10 +1,14 @@
 package com.ccsw.tutorial.game;
 
+import com.ccsw.tutorial.author.AuthorService;
+import com.ccsw.tutorial.category.CategoryService;
+import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +24,26 @@ public class GameServiceImpl implements GameService {
     @Autowired
     GameRepository gameRepository;
 
+    @Autowired
+    AuthorService authorService;
+
+    @Autowired
+    CategoryService categoryService;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public List<Game> find(String title, Long idCategory) {
-        return (List<Game>) this.gameRepository.findAll();
+
+        GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
+        GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
+
+        //Specification<Game> spec = Specification.where(titleSpec).and(categorySpec); -> obsoleto
+        //Desde la version 3.5.0 de Spring Boot, la nueva maner es:
+        Specification<Game> spec = titleSpec.and(categorySpec);
+
+        return this.gameRepository.findAll(spec);
     }
 
     /**
@@ -43,6 +61,10 @@ public class GameServiceImpl implements GameService {
         }
 
         BeanUtils.copyProperties(dto, game, "id", "author", "Category"); //dto es el origen y game el destino de donde se copian los datos. Exceptuando las que estan en "", esas no se copiaran
+
+        //Asigna relaciones de game con sus entidades asociadas
+        game.setAuthor(authorService.get(dto.getAuthor().getId()));
+        game.setCategory(categoryService.get(dto.getCategory().getId()));
 
         this.gameRepository.save(game);
     }
