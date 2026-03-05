@@ -12,6 +12,14 @@ import org.springframework.data.domain.Page;
 public interface AuthorService {
 
     /**
+     * Recupera un {@link Author} a traves de su id
+     *
+     * @param id PK de la entidad
+     * @return {@link Author}
+     */
+    Author get(Long id);
+
+    /**
      * Metodo para recuperar un listado paginado de {@link Author}
      *
      * @param dto dto busqueda
