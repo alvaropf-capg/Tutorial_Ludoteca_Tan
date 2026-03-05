@@ -49,7 +49,7 @@ public class GameController {
      * @param dto datos de la entidad
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a game")
-    @RequestMapping(path = { "", "/{id" }, method = RequestMethod.PUT)
+    @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
         gameService.save(id, dto);
     }

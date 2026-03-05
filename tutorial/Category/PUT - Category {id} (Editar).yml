@@ -1,0 +1,21 @@
+info:
+  name: PUT - Category {id} (Editar)
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://localhost:8080/category/1
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Categoría de prueba modificada"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,15 @@
+info:
+  name: GET - Game (Listar)
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:8080/game
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

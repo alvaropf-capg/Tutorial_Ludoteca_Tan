@@ -1,0 +1,22 @@
+info:
+  name: PUT - Author (Crear)
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: http://localhost:8080/author
+  body:
+    type: json
+    data: |
+      {
+          "name" : "Nuevo autor",
+          "nationality" : "Nueva nacionalidad"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

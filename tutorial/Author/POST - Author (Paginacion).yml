@@ -1,0 +1,30 @@
+info:
+  name: POST - Author (Paginacion)
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/author
+  body:
+    type: json
+    data: |-
+      {
+        "pageable": {
+          "pageSize" : 4,
+          "pageNumber" : 0,
+          "sort" : [
+            {
+              "property" : "name",
+              "direction" : "ASC"
+            }
+          ]
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

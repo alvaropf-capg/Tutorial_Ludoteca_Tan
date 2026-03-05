@@ -1,0 +1,28 @@
+info:
+  name: PUT - Game (Crear)
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://localhost:8080/game
+  body:
+    type: json
+    data: |
+      {
+          "title": "Nuevo juego",
+          "age": "18",
+          "category": {
+              "id": 3
+          },
+          "author": {
+              "id": 1
+          }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

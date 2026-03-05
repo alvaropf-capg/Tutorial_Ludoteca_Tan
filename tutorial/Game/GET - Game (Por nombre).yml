@@ -1,0 +1,19 @@
+info:
+  name: GET - Game (Por nombre)
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:8080/game?title=Av
+  params:
+    - name: title
+      value: Av
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
