@@ -39,7 +39,9 @@ export class GameEditComponent implements OnInit{
       this.categories = categories;
 
       if (this.game.category != null){
-        const categoryFilter: Category[] = categories.filter((category) => category.id === this.game.category.id);
+        const categoryFilter: Category[] = categories.filter(
+          (category) => category.id === this.data.game.category.id
+        );
         if (categoryFilter != null) {
           this.game.category = categoryFilter[0];
         }
@@ -50,7 +52,8 @@ export class GameEditComponent implements OnInit{
       this.authors = authors;
 
       if (this.game.author != null){
-        const authorFilter: Author[] = authors.filter((author) => author.id === this.game.author.id);
+        const authorFilter: Author[] = authors.filter(
+          (author) => author.id === this.data.game.author.id);
         if (authorFilter != null) {
           this.game.author = authorFilter[0];
         }
