@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ServiceCategory } from '../../category/service-category';
 import { ServiceCliente } from '../service-cliente';
+import { MatDialog } from '@angular/material/dialog';
+import { ClienteEditComponent } from '../cliente-edit/cliente-edit';
+import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation';
 
 @Component({
   selector: 'app-cliente-list',
@@ -23,11 +26,46 @@ export class ClienteListComponent implements OnInit{
 
   constructor(
     private serviceCliente: ServiceCliente,
+    public dialog: MatDialog,
   ){}
+
+  createCliente() {
+    const dialogRef = this.dialog.open(ClienteEditComponent, {
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.ngOnInit();
+    });
+  }
 
   ngOnInit(): void {
     this.serviceCliente.getClientes().subscribe(
       clientes => this.dataSource.data = clientes
     );
+  }
+
+  editCliente(cliente: Cliente) {
+    const dialogRef = this.dialog.open(ClienteEditComponent, {
+      data: { cliente}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.ngOnInit();
+    });
+  }
+
+  deleteCliente(cliente: Cliente) {
+    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+      data: {title: "Eliminar cliente", description: "Atencion si borra el cliente se perferan sus datos. <br> ¿Desea eliminar el cliente?"}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.serviceCliente.deleteCliente(cliente.id).subscribe(result => {
+          this.ngOnInit();
+        });
+      }
+    });
   }
 }
