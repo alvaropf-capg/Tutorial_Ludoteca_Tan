@@ -24,17 +24,17 @@ public class Prestamo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id_game", nullable = false)
     private Game game;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
-    @Column(name = "fechaPrestamo")
+    @Column(name = "fecha_Prestamo")
     private LocalDate fechaPrestamo;
 
-    @Column(name = "fechaDevolucion")
+    @Column(name = "fecha_Devolucion")
     private LocalDate fechaDevolucion;
 
 }
