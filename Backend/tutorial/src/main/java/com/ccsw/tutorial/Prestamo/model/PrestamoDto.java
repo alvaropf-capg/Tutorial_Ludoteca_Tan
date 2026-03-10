@@ -17,7 +17,7 @@ public class PrestamoDto {
     private Long id;
     private GameDto game;
     private ClienteDto cliente;
-    private LocalDate fechaPrestamos;
+    private LocalDate fechaPrestamo;
     private LocalDate fechaDevolucion;
 
 }

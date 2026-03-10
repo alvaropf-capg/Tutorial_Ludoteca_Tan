@@ -3,10 +3,12 @@ package com.ccsw.tutorial.Prestamo;
 import com.ccsw.tutorial.Prestamo.model.Prestamo;
 import com.ccsw.tutorial.Prestamo.model.PrestamoDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoSearchDto;
+import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,7 +26,18 @@ public class PrestamoServiceImpl implements PrestamoService {
      */
     @Override
     public Page<Prestamo> findPage(PrestamoSearchDto dto) {
-        return this.prestamoRepository.findAll(dto.getPageable().getPageable());
+
+        PrestamoSpecification clienteSpec = new PrestamoSpecification(new SearchCriteria("cliente.id", ":", dto.getIdCliente()));
+
+        PrestamoSpecification gameSpec = new PrestamoSpecification(new SearchCriteria("game.id", ":", dto.getIdGame()));
+
+        PrestamoSpecification fechaInicioSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", ">=", dto.getFechaInicio()));
+
+        PrestamoSpecification fechaFinSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", "<=", dto.getFechaFin()));
+
+        Specification<Prestamo> spec = clienteSpec.and(gameSpec).and(fechaInicioSpec).and(fechaFinSpec);
+
+        return this.prestamoRepository.findAll(spec, dto.getPageable().getPageable());
     }
 
     /**
@@ -40,7 +53,7 @@ public class PrestamoServiceImpl implements PrestamoService {
             prestamo = this.prestamoRepository.findById(id).orElse(null);
         }
 
-        BeanUtils.copyProperties(data, prestamo, "id"); //Aqui igual se ignoran mas cosas que el id
+        BeanUtils.copyProperties(data, prestamo, "id", "game", "cliente", "fechaPrestamo");
 
         this.prestamoRepository.save(prestamo);
     }

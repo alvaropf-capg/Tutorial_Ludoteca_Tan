@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService {
             game = this.gameRepository.findById(id).orElse(null);
         }
 
-        BeanUtils.copyProperties(dto, game, "id", "author", "Category"); //dto es el origen y game el destino de donde se copian los datos. Exceptuando las que estan en "", esas no se copiaran
+        BeanUtils.copyProperties(dto, game, "id", "author", "category"); //dto es el origen y game el destino de donde se copian los datos. Exceptuando las que estan en "", esas no se copiaran
 
         //Asigna relaciones de game con sus entidades asociadas
         game.setAuthor(authorService.get(dto.getAuthor().getId()));
