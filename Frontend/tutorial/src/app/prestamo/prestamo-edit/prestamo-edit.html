@@ -1,1 +1,42 @@
-<p>prestamo-edit works!</p>
+<div class="container">
+
+  @if (prestamo.id) {
+    <h1>Modificar préstamo</h1>
+  } @else {
+    <h1>Crear préstamo</h1>
+  }
+
+  <form>
+
+    <mat-form-field>
+      <mat-label>Id</mat-label>
+      <input matInput disabled [(ngModel)]="prestamo.id" name="id">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Id del juego</mat-label>
+      <input matInput [(ngModel)]="prestamo.game.id" name="gameId">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Id del cliente</mat-label>
+      <input matInput [(ngModel)]="prestamo.cliente.id" name="clienteId">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Fecha préstamo</mat-label>
+      <input type="date" matInput [(ngModel)]="prestamo.fechaPrestamo" name="fechaPrestamo">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Fecha devolución</mat-label>
+      <input type="date" matInput [(ngModel)]="prestamo.fechaDevolucion" name="fechaDevolucion">
+    </mat-form-field>
+
+  </form>
+
+  <div class="buttons">
+    <button mat-stroked-button (click)="onClose()">Cerrar</button>
+    <button mat-flat-button color="primary" (click)="onSave()">Guardar</button>
+  </div>
+</div>

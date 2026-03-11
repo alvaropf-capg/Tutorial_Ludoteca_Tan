@@ -1,17 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrestamoEdit } from './prestamo-edit';
+import { PrestamoEditComponent } from './prestamo-edit';
 
-describe('PrestamoEdit', () => {
-  let component: PrestamoEdit;
-  let fixture: ComponentFixture<PrestamoEdit>;
-
+describe('PrestamoEditComponent', () => {
+  let component: PrestamoEditComponent;
+  let fixture: ComponentFixture<PrestamoEditComponent>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrestamoEdit],
+      imports: [PrestamoEditComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PrestamoEdit);
+    fixture = TestBed.createComponent(PrestamoEditComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
