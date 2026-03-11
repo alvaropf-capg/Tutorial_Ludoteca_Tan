@@ -35,8 +35,13 @@ public class PrestamoController {
     @Operation(summary = "Find page", description = "Method that return a page of Prestamos")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<PrestamoDto> findPage(@RequestBody PrestamoSearchDto dto) {
-        Page<Prestamo> page = this.prestamoService.findPage(dto);
+        Page<Prestamo> page = this.prestamoService.findPage(dto);   //Llama al servicio para obtener una pagina de entidades Prestamo
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, PrestamoDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
+        //page.getContent() obtiene la lista de entidades
+        //.stream() empieza stream
+        //.map(e -> mapper.map(e, PrestamoDto.class)) cada entidad Prestamo se convierte en un PrestamoDto(Importante que tengan mismos nombre de atributo)
+        //.collect(Collectors.toList()) convierte el stream a una lista
+        //Se construye un PageImpl con la lista de Dtos, paginacion y numero total de elementos
     }
 
     /**

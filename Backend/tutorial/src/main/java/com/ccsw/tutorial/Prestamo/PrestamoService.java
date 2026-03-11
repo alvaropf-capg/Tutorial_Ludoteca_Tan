@@ -17,6 +17,7 @@ public interface PrestamoService {
      * @param {@link Page} de {@link Prestamo}
      */
     Page<Prestamo> findPage(PrestamoSearchDto dto);
+    //aqui recibimos el PrestamoSearchDto con los filtro y paginacion
 
     /** Metodo para crear o actualizar un {@link Prestamo}
      *

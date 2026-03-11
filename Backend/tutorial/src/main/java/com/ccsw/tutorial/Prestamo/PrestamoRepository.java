@@ -12,6 +12,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @author alperezf
  */
 public interface PrestamoRepository extends JpaRepository<Prestamo, Long>, JpaSpecificationExecutor<Prestamo> {
+
+    //Con JpaRepository le damos ciertos metodos desde Spring, como findById, save, ...
+    //JpaSpecificationExecutor nos pertime filtrar por criterios
+
     /**
      * Metodo para recuperar un listado paginal de {@Prestamo}
      *
@@ -20,5 +24,9 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Long>, JpaSp
      */
     @Override
     @EntityGraph(attributePaths = { "game", "cliente" })
+    //Hace consulta optimizada Prestamo + Game + Cliente sin N+1 queries
     Page<Prestamo> findAll(Specification<Prestamo> spec, Pageable pageable);
+    //spec son los filtros dinamicos
+    //pageable numero de pagina, tamaño, sort
+    //devolvemos Page<Prestamo> lista pafinada de prestamos
 }
