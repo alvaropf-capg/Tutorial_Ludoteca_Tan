@@ -8,29 +8,60 @@
 
   <form>
 
+    <!-- Identificador (solo lectura) -->
     <mat-form-field>
-      <mat-label>Id</mat-label>
-      <input matInput disabled [(ngModel)]="prestamo.id" name="id">
+      <mat-label>Identificador</mat-label>
+      <input matInput type="text" [(ngModel)]="prestamo.id" name="id" disabled>
     </mat-form-field>
 
+    <!-- Cliente (combo) -->
     <mat-form-field>
-      <mat-label>Id del juego</mat-label>
-      <input matInput [(ngModel)]="prestamo.game.id" name="gameId">
+      <mat-label>Cliente</mat-label>
+      <mat-select [(ngModel)]="prestamo.cliente" name="cliente" required>
+        @for (c of clientes; track c.id) {
+          <mat-option [value]="c">{{ c.name }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
+    <!-- Juego (combo) -->
     <mat-form-field>
-      <mat-label>Id del cliente</mat-label>
-      <input matInput [(ngModel)]="prestamo.cliente.id" name="clienteId">
+      <mat-label>Juego</mat-label>
+      <mat-select [(ngModel)]="prestamo.game" name="game" required>
+        @for (g of games; track g.id) {
+          <mat-option [value]="g">{{ g.title }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
+    <!-- Fecha de inicio -->
     <mat-form-field>
-      <mat-label>Fecha préstamo</mat-label>
-      <input type="date" matInput [(ngModel)]="prestamo.fechaPrestamo" name="fechaPrestamo">
+      <mat-label>Fecha inicio</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerInicio"
+        [(ngModel)]="fechaPrestamoModel"
+        name="fechaInicio"
+        placeholder="Selecciona fecha de inicio"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+      <mat-datepicker #pickerInicio></mat-datepicker>
     </mat-form-field>
 
+    <!-- Fecha de fin -->
     <mat-form-field>
-      <mat-label>Fecha devolución</mat-label>
-      <input type="date" matInput [(ngModel)]="prestamo.fechaDevolucion" name="fechaDevolucion">
+      <mat-label>Fecha fin</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerFin"
+        [(ngModel)]="fechaDevolucionModel"
+        name="fechaFin"
+        placeholder="Selecciona fecha de fin"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+      <mat-datepicker #pickerFin></mat-datepicker>
     </mat-form-field>
 
   </form>
