@@ -1,1 +1,107 @@
-<p>prestamo-list works!</p>
+<div class="container">
+  <h1>Listado de Préstamos</h1>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <form>
+      <mat-form-field>
+        <mat-label>Título...</mat-label>
+        <input
+          type="text"
+          matInput
+          [(ngModel)]="filterTitulo"
+          placeholder="Título..."
+          name="titulo"
+          />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Cliente...</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="Cliente..."
+          [(ngModel)]="filterCliente"
+          name="cliente"
+          />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Fecha...</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [(ngModel)]="filterFecha"
+          name="fecha"
+          placeholder="Selecciona una fecha"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+    </form>
+
+      <div class="buttons">
+        <button mat-stroked-button (click)="cleanFilters()">Limpiar</button>
+        <button mat-stroked-button (click)="applyFilters()">Filtrar</button>
+      </div>
+  </div>
+
+  <!-- Tabla -->
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef> Identificador </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.id }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="cliente">
+      <mat-header-cell *matHeaderCellDef> Cliente </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.cliente?.name || e.cliente?.id }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="game">
+      <mat-header-cell *matHeaderCellDef> Juego </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.game?.title || e.game?.id }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="fPrestamo">
+      <mat-header-cell *matHeaderCellDef> Préstamo </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.fechaPrestamo }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="fDevolucion">
+      <mat-header-cell *matHeaderCellDef> Devolución </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.fechaDevolucion }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let e">
+        <button mat-icon-button color="primary" (click)="editPrestamo(e)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="accent" (click)="deletePrestamo(e)">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+
+  <!-- Paginación -->
+  <mat-paginator
+    (page)="loadPage($event)"
+    [pageSizeOptions]="[5, 10, 20]"
+    [pageIndex]="search.pageable.pageNumber"
+    [pageSize]="search.pageable.pageSize"
+    [length]="totalElements"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+
+  <div class="buttons">
+    <button mat-flat-button color="primary" (click)="createPrestamo()">Nuevo préstamo</button>
+  </div>
+</div>

@@ -12,10 +12,9 @@ public class PrestamoSearchDto {
 
     private PageableRequest pageable;
 
-    private Long idCliente;
-    private Long idGame;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private String titulo;
+    private String clienteNombre;
+    private LocalDate fecha;
 
     public PageableRequest getPageable() {
         return pageable;

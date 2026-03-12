@@ -27,22 +27,37 @@ public class PrestamoServiceImpl implements PrestamoService {
     @Override
     public Page<Prestamo> findPage(PrestamoSearchDto dto) { //recibe los filtros enviados desde el front
 
-        //Filtro que busca por id de cliente
-        PrestamoSpecification clienteSpec = new PrestamoSpecification(new SearchCriteria("cliente.id", ":", dto.getIdCliente()));
+        Specification<Prestamo> spec = null;
 
-        //Filtro por id de juego
-        PrestamoSpecification gameSpec = new PrestamoSpecification(new SearchCriteria("game.id", ":", dto.getIdGame()));
+        // FILTRO POR TÍTULO DEL JUEGO
+        if (dto.getTitulo() != null && !dto.getTitulo().isEmpty()) {
+            Specification<Prestamo> tituloSpec = new PrestamoSpecification(new SearchCriteria("game.title", ":", dto.getTitulo()));
 
-        //Filtro por fecha de prestamo >= fecha de inicio
-        PrestamoSpecification fechaInicioSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", ">=", dto.getFechaInicio()));
+            spec = (spec == null) ? tituloSpec : spec.and(tituloSpec);
+        }
 
-        //Filtro por fecha de prestamos <= fecha de finalizacion
-        PrestamoSpecification fechaFinSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", "<=", dto.getFechaFin()));
+        // FILTRO POR NOMBRE DEL CLIENTE
+        if (dto.getClienteNombre() != null && !dto.getClienteNombre().isEmpty()) {
+            Specification<Prestamo> clienteSpec = new PrestamoSpecification(new SearchCriteria("cliente.name", ":", dto.getClienteNombre()));
 
-        //Une todos los filtros
-        Specification<Prestamo> spec = clienteSpec.and(gameSpec).and(fechaInicioSpec).and(fechaFinSpec);
+            spec = (spec == null) ? clienteSpec : spec.and(clienteSpec);
+        }
+
+        // FILTRO POR FECHA INTERMEDIA (DÍA EN RANGO)
+        if (dto.getFecha() != null) {
+
+            // fechaPrestamo <= fecha
+            Specification<Prestamo> inicioSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", "<=", dto.getFecha()));
+
+            // fechaDevolucion >= fecha
+            Specification<Prestamo> finSpec = new PrestamoSpecification(new SearchCriteria("fechaDevolucion", ">=", dto.getFecha()));
+
+            spec = (spec == null) ? inicioSpec : spec.and(inicioSpec);
+            spec = spec.and(finSpec);
+        }
 
         return this.prestamoRepository.findAll(spec, dto.getPageable().getPageable());
+
     }
 
     /**

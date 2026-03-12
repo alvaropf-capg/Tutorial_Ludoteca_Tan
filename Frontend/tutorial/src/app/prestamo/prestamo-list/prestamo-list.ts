@@ -7,14 +7,39 @@ import { Prestamo } from '../model/Prestamo';
 import { ServicePrestamo } from '../service-prestamo';
 import { MatDialog } from '@angular/material/dialog';
 import { PrestamoEditComponent } from '../prestamo-edit/prestamo-edit';
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput, MatInputModule } from "@angular/material/input";
+import { FormsModule, NgModel } from '@angular/forms';
+import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-prestamo-list',
-  imports: [CommonModule, MatTableModule, MatPaginator],
+  imports: [CommonModule,
+            MatButton,
+            MatIconModule,
+            MatTableModule,
+            MatPaginator,
+            MatFormField,
+            MatLabel,
+            MatDatepicker,
+            MatDatepickerModule,
+            MatDatepickerToggle,
+            FormsModule,
+            MatInputModule,
+            MatIconButton
+  ],
   templateUrl: './prestamo-list.html',
   styleUrl: './prestamo-list.scss',
 })
 export class PrestamoListComponent implements OnInit {
+
+
+filterTitulo: string = '';
+filterCliente: string = '';
+filterFecha: string = '';
+
 
 search: PrestamoSearch = {
     pageable: {
@@ -53,16 +78,27 @@ search: PrestamoSearch = {
   }
 
   applyFilters() {
+    this.search.titulo = this.filterTitulo;
+    this.search.clienteNombre = this.filterCliente;
+    this.search.fecha = this.filterFecha;
     this.search.pageable.pageNumber = 0;
+
     this.loadPage();
   }
 
   cleanFilters() {
-    this.search.idCliente = undefined;
-    this.search.idGame = undefined;
-    this.search.fechaInicio = undefined;
-    this.search.fechaFin = undefined;
-    this.applyFilters();
+  this.filterTitulo = '';
+  this.filterCliente = '';
+  this.filterFecha = '';
+
+  this.search.titulo = undefined;
+  this.search.clienteNombre = undefined;
+  this.search.fecha = undefined;
+
+  this.search.pageable.pageNumber = 0;
+
+  this.loadPage();
+
   }
 
   createPrestamo() {
