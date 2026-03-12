@@ -5,6 +5,6 @@ export class Prestamo {
   id: number;
   game: Game;
   cliente: Cliente;
-  fechaPrestamos: string;
+  fechaPrestamo: string;
   fechaDevolucion: string;
 }
