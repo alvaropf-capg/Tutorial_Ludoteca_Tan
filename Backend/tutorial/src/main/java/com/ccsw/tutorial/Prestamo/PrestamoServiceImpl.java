@@ -74,7 +74,11 @@ public class PrestamoServiceImpl implements PrestamoService {
             prestamo = this.prestamoRepository.findById(id).orElse(null);
         }
 
-        BeanUtils.copyProperties(data, prestamo, "id", "game", "cliente", "fechaPrestamo"); //Copia todos los atributos menos los que estan entre ""
+        BeanUtils.copyProperties(data, prestamo, "id", "game", "cliente"); //Copia todos los atributos menos los que estan entre ""
+
+        prestamo.setGame(data.getGame());
+        prestamo.setCliente(data.getCliente());
+        prestamo.setFechaPrestamo(data.getFechaPrestamo());
 
         this.prestamoRepository.save(prestamo);
     }

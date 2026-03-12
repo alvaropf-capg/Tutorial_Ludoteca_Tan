@@ -14,6 +14,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { ServicePrestamo } from "../service-prestamo";
 import { ServiceGame } from "../../game/service-game";
 import { ServiceCliente } from "../../cliente/service-cliente";
+import { provideNativeDateAdapter } from "@angular/material/core";
+import { MatDatepickerToggle } from '@angular/material/datepicker';
 
 
 @Component({
@@ -27,7 +29,12 @@ import { ServiceCliente } from "../../cliente/service-cliente";
       MatButtonModule,
       MatIconModule,
       MatDatepickerModule,
-],
+      MatDatepickerToggle
+    ],
+  providers: [
+      provideNativeDateAdapter()
+    ],
+
   templateUrl: './prestamo-edit.html',
   styleUrl: './prestamo-edit.scss',
 })
@@ -56,6 +63,9 @@ export class PrestamoEditComponent implements OnInit {
 
     ngOnInit(): void {
       this.prestamo = this.data?.prestamo? Object.assign({}, this.data.prestamo): new Prestamo();
+      this.prestamo.cliente = this.prestamo.cliente || {} as Cliente;
+      this.prestamo.game    = this.prestamo.game || {} as Game;
+
 
 
       if (this.prestamo.fechaPrestamo) {
@@ -76,7 +86,7 @@ export class PrestamoEditComponent implements OnInit {
           }
       });
 
-      this.serviceGame.getGames().subscribe((games) => {
+      this.serviceGame.getAllGames().subscribe((games) => {
           this.games = games;
 
           if (this.prestamo.game) {

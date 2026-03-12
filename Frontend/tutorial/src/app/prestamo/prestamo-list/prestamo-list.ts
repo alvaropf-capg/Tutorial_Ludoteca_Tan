@@ -13,6 +13,7 @@ import { FormsModule, NgModel } from '@angular/forms';
 import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-prestamo-list',
@@ -24,12 +25,16 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
             MatFormField,
             MatLabel,
             MatDatepicker,
-            MatDatepickerModule,
             MatDatepickerToggle,
+            MatDatepickerModule,
             FormsModule,
             MatInputModule,
             MatIconButton
   ],
+  providers: [
+    provideNativeDateAdapter()
+  ],
+
   templateUrl: './prestamo-list.html',
   styleUrl: './prestamo-list.scss',
 })
@@ -38,7 +43,7 @@ export class PrestamoListComponent implements OnInit {
 
 filterTitulo: string = '';
 filterCliente: string = '';
-filterFecha: string = '';
+filterFecha: Date | null = null;
 
 
 search: PrestamoSearch = {
@@ -80,7 +85,7 @@ search: PrestamoSearch = {
   applyFilters() {
     this.search.titulo = this.filterTitulo;
     this.search.clienteNombre = this.filterCliente;
-    this.search.fecha = this.filterFecha;
+    this.search.fecha = this.filterFecha ? this.filterFecha.toISOString().split('T')[0] : undefined;
     this.search.pageable.pageNumber = 0;
 
     this.loadPage();
@@ -89,7 +94,7 @@ search: PrestamoSearch = {
   cleanFilters() {
   this.filterTitulo = '';
   this.filterCliente = '';
-  this.filterFecha = '';
+  this.filterFecha = null;
 
   this.search.titulo = undefined;
   this.search.clienteNombre = undefined;

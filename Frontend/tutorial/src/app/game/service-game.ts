@@ -14,6 +14,10 @@ export class ServiceGame {
 
   private baseUrl = 'http://localhost:8080/game';
 
+  public getAllGames(): Observable<Game[]> {
+    return this.http.get<Game[]>(this.baseUrl);
+  }
+
   public getGames(title?: string, categoryId?: number): Observable<Game[]> {
     return this.http.get<Game[]>(this.composeFindUrl(title, categoryId));
   }

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Pageable } from '../core/model/page/Pageable';
 import { PrestamoPage } from './model/PrestamoPage';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { PrestamoSearch } from './model/PrestamoSearch';
 import { Prestamo } from './model/Prestamo';
