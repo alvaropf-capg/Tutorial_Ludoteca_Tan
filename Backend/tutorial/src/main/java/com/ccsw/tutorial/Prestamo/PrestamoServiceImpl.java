@@ -41,12 +41,12 @@ public class PrestamoServiceImpl implements PrestamoService {
     @Override
     public Page<PrestamoDto> findPage(PrestamoSearchDto dto) {
 
-        Specification<Prestamo> spec = null;
+        Specification<Prestamo> spec = null; //variable para acumular los filtros
 
         // FILTRO POR TÍTULO DEL JUEGO
-        if (dto.getGameTitle() != null && !dto.getGameTitle().isEmpty()) {
-            Specification<Prestamo> tituloSpec = new PrestamoSpecification(new SearchCriteria("game.title", ":", dto.getGameTitle()));
-            spec = (spec == null) ? tituloSpec : spec.and(tituloSpec);
+        if (dto.getGameTitle() != null && !dto.getGameTitle().isEmpty()) { //verifica si hay valor
+            Specification<Prestamo> tituloSpec = new PrestamoSpecification(new SearchCriteria("game.title", ":", dto.getGameTitle())); //crea specificatio y busca en game.title
+            spec = (spec == null) ? tituloSpec : spec.and(tituloSpec);  //acumula el filtro
         }
 
         // FILTRO POR NOMBRE DEL CLIENTE
@@ -128,10 +128,10 @@ public class PrestamoServiceImpl implements PrestamoService {
     /**
      * Convierte una entidad Prestamo a PrestamoDto
      */
-    private PrestamoDto convertToDto(Prestamo prestamo) {
+    private PrestamoDto convertToDto(Prestamo prestamo) { //pasa de Prestamo a PrestamoDto copiando atributos
         PrestamoDto dto = new PrestamoDto();
         dto.setId(prestamo.getId());
-        dto.setNombreGame(prestamo.getGame().getTitle());           // ← Cambiar a getTitle()
+        dto.setNombreGame(prestamo.getGame().getTitle());
         dto.setNombreCliente(prestamo.getCliente().getName());
         dto.setFechaPrestamo(prestamo.getFechaPrestamo());
         dto.setFechaDevolucion(prestamo.getFechaDevolucion());
