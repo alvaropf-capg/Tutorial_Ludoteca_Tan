@@ -1,6 +1,7 @@
 package com.ccsw.tutorial.Prestamo;
 
 import com.ccsw.tutorial.Prestamo.model.Prestamo;
+import com.ccsw.tutorial.Prestamo.model.PrestamoCreateDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoSearchDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  * @author alperezf
  */
 
-@Tag(name = "Prestamos", description = "API de Prestamo")
+@Tag(name = "Prestamo", description = "API od Prestamo")
 @RequestMapping(value = "/prestamos")
 @RestController
 @CrossOrigin(origins = "*")
@@ -30,41 +31,44 @@ public class PrestamoController {
     ModelMapper mapper;
 
     /**
-     * Metodo para listar paginado de {@link Prestamo}
+     * Metodo para recuperar un listado paginado de {@link Prestamo}
+     *
+     * @param dto dto de busqueda
+     * @return {@link Page} de {@link PrestamoDto}
      */
-    @Operation(summary = "Find page", description = "Method that return a page of Prestamos")
+    @Operation(summary = "Encontrar pagina", description = "Metodo que devuelve una page de Prestamos")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<PrestamoDto> findPage(@RequestBody PrestamoSearchDto dto) {
-        Page<Prestamo> page = this.prestamoService.findPage(dto);   //Llama al servicio para obtener una pagina de entidades Prestamo
+
+        Page<PrestamoDto> page = this.prestamoService.findPage(dto);
+
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, PrestamoDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
-        //page.getContent() obtiene la lista de entidades
-        //.stream() empieza stream
-        //.map(e -> mapper.map(e, PrestamoDto.class)) cada entidad Prestamo se convierte en un PrestamoDto(Importante que tengan mismos nombre de atributo)
-        //.collect(Collectors.toList()) convierte el stream a una lista
-        //Se construye un PageImpl con la lista de Dtos, paginacion y numero total de elementos
     }
 
     /**
      * Metodo para crear o actualizar un {@link Prestamo}
      *
-     * @param id PK de la entidad
+     * @param id OK de la entidad
      * @param dto datos de la entidad
      */
-    @Operation(summary = "Crear o Actualizar", description = "Metodo que crea o actualiza un Prestamo")
+    @Operation(summary = "Crear o actualizar", description = "Metodo que crear o actualiza un Prestamo")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody PrestamoDto dto) {
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody PrestamoCreateDto dto) {
+
         this.prestamoService.save(id, dto);
+
     }
 
     /**
-     * Método eliminar {@link Prestamo}
+     * Método para crear o actualizar un {@link Prestamo}
      *
      * @param id PK de la entidad
      */
     @Operation(summary = "Eliminar", description = "Metodo que elimina un Prestamo")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) throws Exception {
-        this.prestamoService.delete(id);
-    }
 
+        this.prestamoService.delete(id);
+
+    }
 }

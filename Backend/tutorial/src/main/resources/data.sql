@@ -18,4 +18,4 @@ INSERT INTO game(title, age, category_id, author_id) VALUES ('Azul', '8', 3, 5);
 
 INSERT INTO cliente(name) VALUES ('Alvaro');
 
-INSERT INTO prestamo(id_game, id_cliente, fecha_Prestamo, fecha_Devolucion) VALUES (1,1,'2026-03-11','2026-03-14');
+INSERT INTO prestamo(game_id, cliente_id, fecha_Prestamo, fecha_Devolucion) VALUES (1,1,'2026-03-11','2026-03-14');

@@ -1,6 +1,7 @@
 package com.ccsw.tutorial.Prestamo;
 
 import com.ccsw.tutorial.Prestamo.model.Prestamo;
+import com.ccsw.tutorial.Prestamo.model.PrestamoCreateDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoSearchDto;
 import org.springframework.data.domain.Page;
@@ -11,23 +12,23 @@ import org.springframework.data.domain.Page;
 public interface PrestamoService {
 
     /**
-     * Metodo para recuperar listado paginado de {@link Prestamo}
+     * Metodo para recuperar un listado paginado de {@link Prestamo}
      *
-     * @param dto dto de bsuqueda
-     * @param {@link Page} de {@link Prestamo}
+     * @param dto dto de busqueda
+     * @return {link Page} de {@link Prestamo}
      */
-    Page<Prestamo> findPage(PrestamoSearchDto dto);
-    //aqui recibimos el PrestamoSearchDto con los filtro y paginacion
+    Page<PrestamoDto> findPage(PrestamoSearchDto dto);
 
-    /** Metodo para crear o actualizar un {@link Prestamo}
+    /**
+     * Metodo para crear o actualizar un {@link Prestamo}
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    void save(Long id, PrestamoDto dto);
+    void save(Long id, PrestamoCreateDto dto);
 
     /**
-     * Metodo para eliminar un {@link Prestamo}
+     * Metodo para crear o actualizar un {@link Prestamo}
      *
      * @param id PK de la entidad
      */

@@ -8,14 +8,13 @@ import java.time.LocalDate;
 /**
  * @author alperezf
  */
-
 @Getter
 @Setter
-public class PrestamoDto {
+public class PrestamoCreateDto {
 
     private Long id;
-    private String nombreGame;
-    private String nombreCliente;
+    private Long gameId;
+    private Long clienteId;
     private LocalDate fechaPrestamo;
     private LocalDate fechaDevolucion;
 }
