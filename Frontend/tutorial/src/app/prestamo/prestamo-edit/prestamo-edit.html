@@ -8,33 +8,33 @@
 
   <form>
 
-    <!-- Identificador (solo lectura) -->
+    <!-- Identificador -->
     <mat-form-field>
       <mat-label>Identificador</mat-label>
       <input matInput type="text" [(ngModel)]="prestamo.id" name="id" disabled>
     </mat-form-field>
 
-    <!-- Cliente (combo) -->
+    <!-- Cliente -->
     <mat-form-field>
       <mat-label>Cliente</mat-label>
-      <mat-select [(ngModel)]="prestamo.cliente" name="cliente" required>
+      <mat-select [(ngModel)]="prestamo.clienteId" name="clienteId" required>
         @for (c of clientes; track c.id) {
-          <mat-option [value]="c">{{ c.name }}</mat-option>
+          <mat-option [value]="c.id">{{ c.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
-    <!-- Juego (combo) -->
+    <!-- Juego -->
     <mat-form-field>
       <mat-label>Juego</mat-label>
-      <mat-select [(ngModel)]="prestamo.game" name="game" required>
+      <mat-select [(ngModel)]="prestamo.gameId" name="gameId" required>
         @for (g of games; track g.id) {
-          <mat-option [value]="g">{{ g.title }}</mat-option>
+          <mat-option [value]="g.id">{{ g.title }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
-    <!-- Fecha de inicio -->
+    <!-- Fecha inicio -->
     <mat-form-field>
       <mat-label>Fecha inicio</mat-label>
       <input
@@ -49,7 +49,7 @@
       <mat-datepicker #pickerInicio></mat-datepicker>
     </mat-form-field>
 
-    <!-- Fecha de fin -->
+    <!-- Fecha fin -->
     <mat-form-field>
       <mat-label>Fecha fin</mat-label>
       <input
@@ -58,7 +58,6 @@
         [(ngModel)]="fechaDevolucionModel"
         name="fechaFin"
         placeholder="Selecciona fecha de fin"
-        required
       />
       <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
       <mat-datepicker #pickerFin></mat-datepicker>

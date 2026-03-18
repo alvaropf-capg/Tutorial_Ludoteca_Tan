@@ -9,10 +9,10 @@
         <input
           type="text"
           matInput
-          [(ngModel)]="filterTitulo"
+          [(ngModel)]="filterGameTitle"
           placeholder="Título..."
-          name="titulo"
-          />
+          name="gameTitle"
+        />
       </mat-form-field>
 
       <mat-form-field>
@@ -21,9 +21,9 @@
           type="text"
           matInput
           placeholder="Cliente..."
-          [(ngModel)]="filterCliente"
-          name="cliente"
-          />
+          [(ngModel)]="filterClienteName"
+          name="clienteName"
+        />
       </mat-form-field>
 
       <mat-form-field>
@@ -31,56 +31,62 @@
         <input
           matInput
           [matDatepicker]="picker"
-          [(ngModel)]="filterFecha"
-          name="fecha"
+          [(ngModel)]="filterFechaPrestamoFrom"
+          name="fechaPrestamoFrom"
           placeholder="Selecciona una fecha"
-          />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
     </form>
 
-      <div class="buttons">
-        <button mat-stroked-button (click)="cleanFilters()">Limpiar</button>
-        <button mat-stroked-button (click)="applyFilters()">Filtrar</button>
-      </div>
+    <div class="buttons">
+      <button mat-stroked-button (click)="cleanFilters()">Limpiar</button>
+      <button mat-stroked-button (click)="applyFilters()">Filtrar</button>
+    </div>
   </div>
 
   <!-- Tabla -->
   <mat-table [dataSource]="dataSource">
+
+    <!-- ID -->
     <ng-container matColumnDef="id">
       <mat-header-cell *matHeaderCellDef> Identificador </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.id }} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="cliente">
+    <!-- Cliente -->
+    <ng-container matColumnDef="clienteName">
       <mat-header-cell *matHeaderCellDef> Cliente </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.cliente?.name || e.cliente?.id }} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="game">
+    <!-- Juego -->
+    <ng-container matColumnDef="gameName">
       <mat-header-cell *matHeaderCellDef> Juego </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.game?.title || e.game?.id }} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="fPrestamo">
+    <!-- Fecha préstamo -->
+    <ng-container matColumnDef="fechaPrestamo">
       <mat-header-cell *matHeaderCellDef> Préstamo </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.fechaPrestamo }} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="fDevolucion">
+    <!-- Fecha devolución -->
+    <ng-container matColumnDef="fechaDevolucion">
       <mat-header-cell *matHeaderCellDef> Devolución </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.fechaDevolucion }} </mat-cell>
     </ng-container>
 
+    <!-- Acciones -->
     <ng-container matColumnDef="action">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let e">
         <button mat-icon-button color="primary" (click)="editPrestamo(e)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="accent" (click)="deletePrestamo(e)">
+        <button mat-icon-button color="accent" (click)="deletePrestamo(e.id)">
           <mat-icon>clear</mat-icon>
         </button>
       </mat-cell>
@@ -97,8 +103,7 @@
     [pageIndex]="search.pageable.pageNumber"
     [pageSize]="search.pageable.pageSize"
     [length]="totalElements"
-    showFirstLastButtons
-  >
+    showFirstLastButtons>
   </mat-paginator>
 
   <div class="buttons">

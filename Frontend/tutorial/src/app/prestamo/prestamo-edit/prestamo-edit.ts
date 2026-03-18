@@ -16,6 +16,7 @@ import { ServiceGame } from "../../game/service-game";
 import { ServiceCliente } from "../../cliente/service-cliente";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatDatepickerToggle } from '@angular/material/datepicker';
+import { PrestamoCreate } from "../model/PrestamoCreate";
 
 
 @Component({
@@ -40,15 +41,16 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
 })
 export class PrestamoEditComponent implements OnInit {
 
-  prestamo: Prestamo;
-
-
+  prestamo: PrestamoCreate;
   clientes: Cliente[] = [];
   games: Game[] = [];
 
 
   fechaPrestamoModel: Date | null = null;
   fechaDevolucionModel: Date | null = null;
+
+  error = '';
+  success = '';
 
 
 
@@ -62,15 +64,19 @@ export class PrestamoEditComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-      this.prestamo = this.data?.prestamo? Object.assign({}, this.data.prestamo): new Prestamo();
-      this.prestamo.cliente = this.prestamo.cliente || {} as Cliente;
-      this.prestamo.game    = this.prestamo.game || {} as Game;
 
-
+      if (this.data?.prestamo) {
+        const existingPrestamo = this.data.prestamo as Prestamo;
+        this.prestamo = new PrestamoCreate();
+        this.prestamo.id = existingPrestamo.id;
+      } else {
+        // Crear nuevo
+        this.prestamo = new PrestamoCreate();
+      }
 
       if (this.prestamo.fechaPrestamo) {
-            this.fechaPrestamoModel = new Date(this.prestamo.fechaPrestamo);
-          }
+        this.fechaPrestamoModel = new Date(this.prestamo.fechaPrestamo);
+      }
       if (this.prestamo.fechaDevolucion) {
         this.fechaDevolucionModel = new Date(this.prestamo.fechaDevolucion);
       }
@@ -78,36 +84,59 @@ export class PrestamoEditComponent implements OnInit {
       // Cargar combos
       this.serviceCliente.getClientes().subscribe((clientes) => {
           this.clientes = clientes;
-
-          // Si venía un cliente, reasignar la referencia desde el listado
-          if (this.prestamo.cliente) {
-            const found = this.clientes.find(c => c.id === this.prestamo.cliente.id);
-            if (found) this.prestamo.cliente = found;
-          }
       });
 
       this.serviceGame.getAllGames().subscribe((games) => {
           this.games = games;
-
-          if (this.prestamo.game) {
-            const found = this.games.find(g => g.id === this.prestamo.game.id);
-            if (found) this.prestamo.game = found;
-          }
       });
     }
 
     private toIsoDate(d: Date | null): string | undefined {
-      return d ? d.toISOString().split('T')[0] : undefined; // 'YYYY-MM-DD'
+      return d ? d.toISOString().split('T')[0] : undefined;
     }
 
     onSave() {
-      this.prestamo.fechaPrestamo = this.toIsoDate(this.fechaPrestamoModel);
+      // Validaciones
+      if (!this.prestamo.gameId) {
+        this.error = 'Debes seleccionar un juego';
+        return;
+      }
+
+      if (!this.prestamo.clienteId) {
+        this.error = 'Debes seleccionar un cliente';
+        return;
+      }
+
+      if (!this.fechaPrestamoModel) {
+        this.error = 'Debes indicar la fecha de préstamo';
+        return;
+      }
+
+      if (this.fechaPrestamoModel > new Date()) {
+        this.error = 'La fecha de préstamo no puede ser en el futuro';
+        return;
+      }
+
+      if (this.fechaDevolucionModel && this.fechaDevolucionModel < this.fechaPrestamoModel) {
+        this.error = 'La fecha de devolución debe ser posterior a la de préstamo';
+        return;
+      }
+
+      // Convertir fechas
+      this.prestamo.fechaPrestamo = this.toIsoDate(this.fechaPrestamoModel) || '';
       this.prestamo.fechaDevolucion = this.toIsoDate(this.fechaDevolucionModel);
 
-      this.servicePrestamo.savePrestamo(this.prestamo).subscribe(() => {
-        this.dialogRef.close();
-      });
-
+      // Enviar al back
+      this.servicePrestamo.savePrestamo(this.prestamo).subscribe(
+        () => {
+          this.success = 'Préstamo guardado correctamente';
+          setTimeout(() => this.dialogRef.close(), 1000);
+        },
+        (error) => {
+          this.error = error.error?.message || 'Error al guardar el préstamo';
+          console.error(error);
+        }
+      );
     }
 
     onClose() {

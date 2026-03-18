@@ -100,9 +100,10 @@ search: PrestamoSearch = {
   this.filterFechaPrestamoFrom = null;
   this.filterFechaPrestamoTo = null;
 
-  this.search.gameTitle = undefined;
-  this.search.clienteName = undefined;
-  this.search.fechaPrestamo = undefined;
+  this.search.fechaPrestamoFrom = undefined;      
+  this.search.fechaPrestamoTo = undefined;
+  this.search.fechaDevolucionFrom = undefined;
+  this.search.fechaDevolucionTo = undefined;
 
   this.search.pageable.pageNumber = 0;
 
