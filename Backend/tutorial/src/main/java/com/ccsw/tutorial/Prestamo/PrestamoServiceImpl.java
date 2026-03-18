@@ -9,15 +9,19 @@ import com.ccsw.tutorial.Prestamo.model.PrestamoSearchDto;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.GameService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 /**
  * @author alperezf
  */
+@Service
+@Transactional
 public class PrestamoServiceImpl implements PrestamoService {
 
     @Autowired
