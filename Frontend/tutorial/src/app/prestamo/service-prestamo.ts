@@ -19,7 +19,7 @@ export class ServicePrestamo {
   return this.http.post<PrestamoPage>(this.baseUrl, search);
   }
 
-savePrestamo(prestamo: Prestamo): Observable<void> {
+  savePrestamo(prestamo: Prestamo): Observable<void> {
 
     const { id } = prestamo;
     const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;

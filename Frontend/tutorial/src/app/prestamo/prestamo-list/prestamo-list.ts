@@ -41,23 +41,24 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 export class PrestamoListComponent implements OnInit {
 
 
-filterTitulo: string = '';
-filterCliente: string = '';
-filterFecha: Date | null = null;
+filterGameTitle: string = '';
+filterClienteName: string = '';
+filterFechaPrestamoFrom: Date | null = null;
+filterFechaPrestamoTo: Date | null = null;
 
 
 search: PrestamoSearch = {
     pageable: {
       pageNumber: 0,
       pageSize: 5,
-      sort: [{ property: 'id', direction: 'ASC' }]
+      sort: [{ property: 'fechaPrestamo', direction: 'DESC' }]
     }
   };
 
   totalElements = 0;
 
   dataSource = new MatTableDataSource<Prestamo>();
-  displayedColumns: string[] = ['id', 'cliente', 'game', 'fPrestamo', 'fDevolucion', 'action'];
+  displayedColumns: string[] = ['id', 'clienteName', 'gameName', 'fechaPrestamo', 'fechaDevolucion', 'action'];
 
   constructor(
     private servicePrestamo: ServicePrestamo,
@@ -83,22 +84,25 @@ search: PrestamoSearch = {
   }
 
   applyFilters() {
-    this.search.titulo = this.filterTitulo;
-    this.search.clienteNombre = this.filterCliente;
-    this.search.fecha = this.filterFecha ? this.filterFecha.toISOString().split('T')[0] : undefined;
+    this.search.gameTitle = this.filterGameTitle || undefined;
+    this.search.clienteName = this.filterClienteName || undefined;
+    this.search.fechaPrestamoFrom = this.filterFechaPrestamoFrom ? this.filterFechaPrestamoFrom.toISOString().split('T')[0] : undefined;
+    this.search.fechaPrestamoTo = this.filterFechaPrestamoTo ? this.filterFechaPrestamoTo.toISOString().split('T')[0] : undefined;
+
     this.search.pageable.pageNumber = 0;
 
     this.loadPage();
   }
 
   cleanFilters() {
-  this.filterTitulo = '';
-  this.filterCliente = '';
-  this.filterFecha = null;
+  this.filterGameTitle = '';
+  this.filterClienteName = '';
+  this.filterFechaPrestamoFrom = null;
+  this.filterFechaPrestamoTo = null;
 
-  this.search.titulo = undefined;
-  this.search.clienteNombre = undefined;
-  this.search.fecha = undefined;
+  this.search.gameTitle = undefined;
+  this.search.clienteName = undefined;
+  this.search.fechaPrestamo = undefined;
 
   this.search.pageable.pageNumber = 0;
 
@@ -116,8 +120,18 @@ search: PrestamoSearch = {
     dialogRef.afterClosed().subscribe(() => this.loadPage());
   }
 
-  deletePrestamo(item: Prestamo) {
+  //TODO ver cual usar
+  /*deletePrestamo(item: Prestamo) {
     this.servicePrestamo.deletePrestamo(item.id).subscribe(() => this.loadPage());
+  }
+    */
+
+  deletePrestamo(id: number) {
+    if (confirm('¿Estás seguro de que quieres eliminar este préstamo?')) {
+      this.servicePrestamo.deletePrestamo(id).subscribe(() => {
+        this.loadPage();
+      });
+    }
   }
 
 }

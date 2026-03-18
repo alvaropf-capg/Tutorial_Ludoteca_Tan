@@ -3,8 +3,8 @@ import { Game } from "../../game/model/Game";
 
 export class Prestamo {
   id: number;
-  game: Game;
-  cliente: Cliente;
+  gameName: string;
+  clienteName: string;
   fechaPrestamo: string;
-  fechaDevolucion: string;
+  fechaDevolucion?: string;
 }
