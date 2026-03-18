@@ -1,8 +1,8 @@
 
 export class Prestamo {
   id: number;
-  gameName: string;
-  clienteName: string;
+  nombreGame: string;
+  nombreCliente: string;
   fechaPrestamo: string;
   fechaDevolucion?: string;
 }

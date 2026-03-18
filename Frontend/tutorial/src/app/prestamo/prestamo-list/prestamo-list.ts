@@ -58,7 +58,7 @@ export class PrestamoListComponent implements OnInit {
   totalElements = 0;
 
   dataSource = new MatTableDataSource<Prestamo>();
-  displayedColumns: string[] = ['id', 'clienteName', 'gameName', 'fechaPrestamo', 'fechaDevolucion', 'action', 'debug'];
+  displayedColumns: string[] = ['id', 'nombreCliente', 'nombreGame', 'fechaPrestamo', 'fechaDevolucion', 'action', 'debug'];
 
   constructor(
     private servicePrestamo: ServicePrestamo,
