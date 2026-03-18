@@ -3,8 +3,6 @@ package com.ccsw.tutorial.Prestamo.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 /**
  * @author alperezf
  */
@@ -16,6 +14,6 @@ public class PrestamoDto {
     private Long id;
     private String nombreGame;
     private String nombreCliente;
-    private LocalDate fechaPrestamo;
-    private LocalDate fechaDevolucion;
+    private String fechaPrestamo;
+    private String fechaDevolucion;
 }

@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PrestamoSearch } from '../model/PrestamoSearch';
 import { Prestamo } from '../model/Prestamo';
 import { ServicePrestamo } from '../service-prestamo';
@@ -13,7 +11,10 @@ import { FormsModule, NgModel } from '@angular/forms';
 import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation';
 
 @Component({
   selector: 'app-prestamo-list',
@@ -40,14 +41,13 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 })
 export class PrestamoListComponent implements OnInit {
 
+  // FILTROS
+  filterGameTitle: string = '';
+  filterClienteName: string = '';
+  filterFechaPrestamoFrom: Date | null = null;
+  filterFechaPrestamoTo: Date | null = null;
 
-filterGameTitle: string = '';
-filterClienteName: string = '';
-filterFechaPrestamoFrom: Date | null = null;
-filterFechaPrestamoTo: Date | null = null;
-
-
-search: PrestamoSearch = {
+  search: PrestamoSearch = {
     pageable: {
       pageNumber: 0,
       pageSize: 5,
@@ -58,7 +58,7 @@ search: PrestamoSearch = {
   totalElements = 0;
 
   dataSource = new MatTableDataSource<Prestamo>();
-  displayedColumns: string[] = ['id', 'clienteName', 'gameName', 'fechaPrestamo', 'fechaDevolucion', 'action'];
+  displayedColumns: string[] = ['id', 'clienteName', 'gameName', 'fechaPrestamo', 'fechaDevolucion', 'action', 'debug'];
 
   constructor(
     private servicePrestamo: ServicePrestamo,
@@ -76,6 +76,8 @@ search: PrestamoSearch = {
     }
 
     this.servicePrestamo.getPrestamos(this.search).subscribe((data) => {
+      console.log('🔎 Ejemplo de fila recibida:', data?.content?.[0]); //temporal
+
       this.dataSource.data = data.content;
       this.search.pageable.pageNumber = data.pageable.pageNumber;
       this.search.pageable.pageSize = data.pageable.pageSize;
@@ -86,29 +88,28 @@ search: PrestamoSearch = {
   applyFilters() {
     this.search.gameTitle = this.filterGameTitle || undefined;
     this.search.clienteName = this.filterClienteName || undefined;
-    this.search.fechaPrestamoFrom = this.filterFechaPrestamoFrom ? this.filterFechaPrestamoFrom.toISOString().split('T')[0] : undefined;
-    this.search.fechaPrestamoTo = this.filterFechaPrestamoTo ? this.filterFechaPrestamoTo.toISOString().split('T')[0] : undefined;
+    this.search.fechaPrestamoFrom = this.filterFechaPrestamoFrom ?
+      this.filterFechaPrestamoFrom.toISOString().split('T')[0] : undefined;
+    this.search.fechaPrestamoTo = this.filterFechaPrestamoTo ?
+      this.filterFechaPrestamoTo.toISOString().split('T')[0] : undefined;
 
     this.search.pageable.pageNumber = 0;
-
     this.loadPage();
   }
 
   cleanFilters() {
-  this.filterGameTitle = '';
-  this.filterClienteName = '';
-  this.filterFechaPrestamoFrom = null;
-  this.filterFechaPrestamoTo = null;
+    this.filterGameTitle = '';
+    this.filterClienteName = '';
+    this.filterFechaPrestamoFrom = null;
+    this.filterFechaPrestamoTo = null;
 
-  this.search.fechaPrestamoFrom = undefined;      
-  this.search.fechaPrestamoTo = undefined;
-  this.search.fechaDevolucionFrom = undefined;
-  this.search.fechaDevolucionTo = undefined;
+    this.search.gameTitle = undefined;
+    this.search.clienteName = undefined;
+    this.search.fechaPrestamoFrom = undefined;
+    this.search.fechaPrestamoTo = undefined;
 
-  this.search.pageable.pageNumber = 0;
-
-  this.loadPage();
-
+    this.search.pageable.pageNumber = 0;
+    this.loadPage();
   }
 
   createPrestamo() {
@@ -121,18 +122,20 @@ search: PrestamoSearch = {
     dialogRef.afterClosed().subscribe(() => this.loadPage());
   }
 
-  //TODO ver cual usar
-  /*deletePrestamo(item: Prestamo) {
-    this.servicePrestamo.deletePrestamo(item.id).subscribe(() => this.loadPage());
-  }
-    */
+  deletePrestamo(prestamo: Prestamo) {
+    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+      data: {
+        title: 'Eliminar préstamo',
+        description: 'Atención si borra el préstamo se perderán sus datos. <br> ¿Desea eliminar el préstamo?',
+      },
+    });
 
-  deletePrestamo(id: number) {
-    if (confirm('¿Estás seguro de que quieres eliminar este préstamo?')) {
-      this.servicePrestamo.deletePrestamo(id).subscribe(() => {
-        this.loadPage();
-      });
-    }
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.servicePrestamo.deletePrestamo(prestamo.id).subscribe(() => {
+          this.loadPage();
+        });
+      }
+    });
   }
-
 }

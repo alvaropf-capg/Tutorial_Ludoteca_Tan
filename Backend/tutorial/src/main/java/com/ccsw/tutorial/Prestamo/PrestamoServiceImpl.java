@@ -132,13 +132,15 @@ public class PrestamoServiceImpl implements PrestamoService {
     /**
      * Convierte una entidad Prestamo a PrestamoDto
      */
-    private PrestamoDto convertToDto(Prestamo prestamo) { //pasa de Prestamo a PrestamoDto copiando atributos
+    private PrestamoDto convertToDto(Prestamo prestamo) {
         PrestamoDto dto = new PrestamoDto();
         dto.setId(prestamo.getId());
         dto.setNombreGame(prestamo.getGame().getTitle());
         dto.setNombreCliente(prestamo.getCliente().getName());
-        dto.setFechaPrestamo(prestamo.getFechaPrestamo());
-        dto.setFechaDevolucion(prestamo.getFechaDevolucion());
+        dto.setFechaPrestamo(prestamo.getFechaPrestamo().toString());
+        if (prestamo.getFechaDevolucion() != null) {
+            dto.setFechaDevolucion(prestamo.getFechaDevolucion().toString());
+        }
         return dto;
     }
 
