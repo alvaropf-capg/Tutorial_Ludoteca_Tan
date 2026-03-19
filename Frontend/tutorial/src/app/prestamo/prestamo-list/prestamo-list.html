@@ -63,56 +63,48 @@
   <!-- Tabla -->
   <mat-table [dataSource]="dataSource">
 
-  <!-- ID -->
-  <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
-    <mat-cell *matCellDef="let e"> {{ e.id }} </mat-cell>
-  </ng-container>
+    <!-- ID -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.id }} </mat-cell>
+    </ng-container>
 
-  <!-- CLIENTE -->
-  <ng-container matColumnDef="nombreCliente">
-    <mat-header-cell *matHeaderCellDef> Cliente </mat-header-cell>
-    <mat-cell *matCellDef="let e"> {{ e.nombreCliente }} </mat-cell>
-  </ng-container>
+    <!-- CLIENTE -->
+    <ng-container matColumnDef="nombreCliente">
+      <mat-header-cell *matHeaderCellDef> Cliente </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.nombreCliente }} </mat-cell>
+    </ng-container>
 
-  <!-- JUEGO -->
-  <ng-container matColumnDef="nombreGame">
-    <mat-header-cell *matHeaderCellDef> Juego </mat-header-cell>
-    <mat-cell *matCellDef="let e"> {{ e.nombreGame }} </mat-cell>
-  </ng-container>
+    <!-- JUEGO -->
+    <ng-container matColumnDef="nombreGame">
+      <mat-header-cell *matHeaderCellDef> Juego </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.nombreGame }} </mat-cell>
+    </ng-container>
 
-  <!-- FECHA PRESTAMO -->
-  <ng-container matColumnDef="fechaPrestamo">
-    <mat-header-cell *matHeaderCellDef> Préstamo </mat-header-cell>
-    <mat-cell *matCellDef="let e"> {{ e.fechaPrestamo }} </mat-cell>
-  </ng-container>
+    <!-- FECHA PRESTAMO -->
+    <ng-container matColumnDef="fechaPrestamo">
+      <mat-header-cell *matHeaderCellDef> Préstamo </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.fechaPrestamo }} </mat-cell>
+    </ng-container>
 
-  <!-- FECHA DEVOLUCION -->
-  <ng-container matColumnDef="fechaDevolucion">
-    <mat-header-cell *matHeaderCellDef> Devolución </mat-header-cell>
-    <mat-cell *matCellDef="let e"> {{ e.fechaDevolucion }} </mat-cell>
-  </ng-container>
+    <!-- FECHA DEVOLUCION -->
+    <ng-container matColumnDef="fechaDevolucion">
+      <mat-header-cell *matHeaderCellDef> Devolución </mat-header-cell>
+      <mat-cell *matCellDef="let e"> {{ e.fechaDevolucion }} </mat-cell>
+    </ng-container>
 
-  <!-- ACCIONES -->
-  <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef></mat-header-cell>
-    <mat-cell *matCellDef="let e">
-      <button mat-icon-button color="primary" (click)="editPrestamo(e)">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="accent" (click)="deletePrestamo(e)">
-        <mat-icon>clear</mat-icon>
-      </button>
-    </mat-cell>
-  </ng-container>
-
-
-<ng-container matColumnDef="debug">
-  <mat-header-cell *matHeaderCellDef> Debug </mat-header-cell>
-  <mat-cell *matCellDef="let e"> {{ e | json }} </mat-cell>
-</ng-container>
-
-
+    <!-- ACCIONES -->
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let e">
+        <button mat-icon-button color="primary" (click)="editPrestamo(e)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="accent" (click)="deletePrestamo(e)">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>

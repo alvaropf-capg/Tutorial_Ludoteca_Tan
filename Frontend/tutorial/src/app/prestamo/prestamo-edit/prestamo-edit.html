@@ -17,23 +17,45 @@
     <!-- Cliente -->
     <mat-form-field>
       <mat-label>Cliente</mat-label>
-      <mat-select [(ngModel)]="prestamo.clienteId" name="clienteId" required>
-        @for (c of clientes; track c.id) {
-          <mat-option [value]="c.id">{{ c.name }}</mat-option>
+      <input
+        matInput
+        [matAutocomplete]="autoCliente"
+        [formControl]="clienteCtrl"
+        placeholder="Escribe para buscar cliente"
+        required/>
+      <mat-autocomplete
+        #autoCliente="matAutocomplete"
+        [displayWith]="displayCliente"
+        (optionSelected)="prestamo.clienteId = $event.option.value.id">
+
+        @for (c of (filteredClientes$ | async); track c.id) {
+          <mat-option [value]="c">{{ c.name }}</mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
     </mat-form-field>
+
 
     <!-- Juego -->
     <mat-form-field>
       <mat-label>Juego</mat-label>
-      <mat-select [(ngModel)]="prestamo.gameId" name="gameId" required>
-        @for (g of games; track g.id) {
-          <mat-option [value]="g.id">{{ g.title }}</mat-option>
+      <input
+        matInput
+        [matAutocomplete]="autoJuego"
+        [formControl]="gameCtrl"
+        placeholder="Escribe para buscar juego"
+        required
+      />
+      <mat-autocomplete
+        #autoJuego="matAutocomplete"
+        [displayWith]="displayGame"
+        (optionSelected)="prestamo.gameId = $event.option.value.id"
+      >
+        @for (g of (filteredGames$ | async); track g.id) {
+          <mat-option [value]="g">{{ g.title }}</mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
     </mat-form-field>
-
+    
     <!-- Fecha inicio -->
     <mat-form-field>
       <mat-label>Fecha inicio</mat-label>

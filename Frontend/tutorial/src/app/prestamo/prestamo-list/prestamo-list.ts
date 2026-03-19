@@ -58,7 +58,7 @@ export class PrestamoListComponent implements OnInit {
   totalElements = 0;
 
   dataSource = new MatTableDataSource<Prestamo>();
-  displayedColumns: string[] = ['id', 'nombreCliente', 'nombreGame', 'fechaPrestamo', 'fechaDevolucion', 'action', 'debug'];
+  displayedColumns: string[] = ['id', 'nombreCliente', 'nombreGame', 'fechaPrestamo', 'fechaDevolucion', 'action'];
 
   constructor(
     private servicePrestamo: ServicePrestamo,
@@ -76,8 +76,6 @@ export class PrestamoListComponent implements OnInit {
     }
 
     this.servicePrestamo.getPrestamos(this.search).subscribe((data) => {
-      console.log('🔎 Ejemplo de fila recibida:', data?.content?.[0]); //temporal
-
       this.dataSource.data = data.content;
       this.search.pageable.pageNumber = data.pageable.pageNumber;
       this.search.pageable.pageSize = data.pageable.pageSize;
