@@ -11,34 +11,36 @@
     <!-- Identificador -->
     <mat-form-field>
       <mat-label>Identificador</mat-label>
-      <input matInput type="text" [(ngModel)]="prestamo.id" name="id" disabled>
+      <input matInput type="text" [(ngModel)]="prestamo.id" name="id" disabled />
     </mat-form-field>
 
     <!-- Cliente -->
     <mat-form-field>
       <mat-label>Cliente</mat-label>
       <input
+        type="text"
         matInput
         [matAutocomplete]="autoCliente"
         [formControl]="clienteCtrl"
         placeholder="Escribe para buscar cliente"
-        required/>
+        required
+      />
       <mat-autocomplete
         #autoCliente="matAutocomplete"
         [displayWith]="displayCliente"
-        (optionSelected)="prestamo.clienteId = $event.option.value.id">
-
+        (optionSelected)="prestamo.clienteId = $event.option.value.id"
+      >
         @for (c of (filteredClientes$ | async); track c.id) {
           <mat-option [value]="c">{{ c.name }}</mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
 
-
     <!-- Juego -->
     <mat-form-field>
       <mat-label>Juego</mat-label>
       <input
+        type="text"
         matInput
         [matAutocomplete]="autoJuego"
         [formControl]="gameCtrl"
@@ -55,7 +57,7 @@
         }
       </mat-autocomplete>
     </mat-form-field>
-    
+
     <!-- Fecha inicio -->
     <mat-form-field>
       <mat-label>Fecha inicio</mat-label>
@@ -66,6 +68,7 @@
         name="fechaInicio"
         placeholder="Selecciona fecha de inicio"
         required
+        (dateChange)="onFechaPrestamoChange()"   
       />
       <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
       <mat-datepicker #pickerInicio></mat-datepicker>
@@ -80,6 +83,8 @@
         [(ngModel)]="fechaDevolucionModel"
         name="fechaFin"
         placeholder="Selecciona fecha de fin"
+        [min]="minDevolucion"
+        [max]="maxDevolucion"
       />
       <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
       <mat-datepicker #pickerFin></mat-datepicker>

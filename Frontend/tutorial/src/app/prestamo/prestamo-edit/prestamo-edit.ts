@@ -20,46 +20,45 @@ import { PrestamoCreate } from "../model/PrestamoCreate";
 import { map, Observable, startWith } from "rxjs";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
-
 @Component({
   selector: 'app-prestamo-edit',
   imports: [
-      CommonModule,
-      FormsModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatSelectModule,
-      MatButtonModule,
-      MatIconModule,
-      MatDatepickerModule,
-      MatDatepickerToggle,
-      ReactiveFormsModule,
-      MatAutocompleteModule
-    ],
+    CommonModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatDatepickerToggle,
+    ReactiveFormsModule,
+    MatAutocompleteModule
+  ],
   providers: [
-      provideNativeDateAdapter()
-    ],
+    provideNativeDateAdapter()
+  ],
 
   templateUrl: './prestamo-edit.html',
   styleUrl: './prestamo-edit.scss',
 })
-
 export class PrestamoEditComponent implements OnInit {
 
   prestamo: PrestamoCreate;
   clientes: Cliente[] = [];
   games: Game[] = [];
 
-  // Controles para los inputs de autocompletar
   clienteCtrl = new FormControl<string | Cliente>('');
   gameCtrl = new FormControl<string | Game>('');
 
-  // Streams con listas filtradas
   filteredClientes$!: Observable<Cliente[]>;
   filteredGames$!: Observable<Game[]>;
 
   fechaPrestamoModel: Date | null = null;
   fechaDevolucionModel: Date | null = null;
+
+  minDevolucion: Date | null = null;
+  maxDevolucion: Date | null = null;
 
   error = '';
   success = '';
@@ -73,7 +72,8 @@ export class PrestamoEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Inicializar prestamo
+
+    // Inicializar préstamo
     if (this.data?.prestamo) {
       const existingPrestamo = this.data.prestamo as Prestamo;
       this.prestamo = new PrestamoCreate();
@@ -86,30 +86,35 @@ export class PrestamoEditComponent implements OnInit {
       this.prestamo = new PrestamoCreate();
     }
 
+    // ✅ PARSEAR FECHAS SIN TIMEZONE
     if (this.prestamo.fechaPrestamo) {
-      this.fechaPrestamoModel = new Date(this.prestamo.fechaPrestamo);
+      this.fechaPrestamoModel = this.parseDateLocal(this.prestamo.fechaPrestamo);
     }
     if (this.prestamo.fechaDevolucion) {
-      this.fechaDevolucionModel = new Date(this.prestamo.fechaDevolucion);
+      this.fechaDevolucionModel = this.parseDateLocal(this.prestamo.fechaDevolucion);
     }
 
-    // Cargar combos
+    // ✅ Inicializar límites de devolución si aplica
+    if (this.fechaPrestamoModel) {
+      this.onFechaPrestamoChange();
+    }
+
+    // Cargar clientes
     this.serviceCliente.getClientes().subscribe((clientes) => {
       this.clientes = clientes;
 
-      // precarga el control con el objeto en edicion
       if (this.prestamo.clienteId) {
         const selected = this.clientes.find(c => c.id === this.prestamo.clienteId);
         if (selected) this.clienteCtrl.setValue(selected);
       }
 
-      // Configuracion filtrado reactivo
       this.filteredClientes$ = this.clienteCtrl.valueChanges.pipe(
         startWith(this.clienteCtrl.value ?? ''),
         map(value => this._filterClientes(value))
       );
     });
 
+    // Cargar juegos
     this.serviceGame.getAllGames().subscribe((games) => {
       this.games = games;
 
@@ -125,41 +130,76 @@ export class PrestamoEditComponent implements OnInit {
     });
   }
 
-  // helpers de filtrado
+  // ✅ CREAR FECHA SIN DESPLAZAMIENTO POR ZONA HORARIA
+  private parseDateLocal(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   private _filterClientes(value: string | Cliente): Cliente[] {
     const text = typeof value === 'string' ? value : value?.name ?? '';
-    const filter = text.toLowerCase().trim();
-    return this.clientes.filter(c => c.name.toLowerCase().includes(filter));
+    return this.clientes.filter(c => c.name.toLowerCase().includes(text.toLowerCase()));
   }
 
   private _filterGames(value: string | Game): Game[] {
     const text = typeof value === 'string' ? value : value?.title ?? '';
-    const filter = text.toLowerCase().trim();
-    return this.games.filter(g => g.title.toLowerCase().includes(filter));
+    return this.games.filter(g => g.title.toLowerCase().includes(text.toLowerCase()));
   }
 
-  // mostrar el texto en el input cuando el value es el objeto
-  displayCliente = (cliente?: Cliente | string): string => {
-    if (!cliente) return '';
-    return typeof cliente === 'string' ? cliente : cliente.name;
-  };
+  displayCliente = (c?: Cliente | string): string =>
+    !c ? '' : typeof c === 'string' ? c : c.name;
 
-  displayGame = (game?: Game | string): string => {
-    if (!game) return '';
-    return typeof game === 'string' ? game : game.title;
-  };
+  displayGame = (g?: Game | string): string =>
+    !g ? '' : typeof g === 'string' ? g : g.title;
 
-  private toIsoDate(date: Date | null): string | undefined {
-    return date ? date.toISOString().split('T')[0] : undefined;
+  private normalizeDate(d: Date): Date {
+    const nd = new Date(d);
+    nd.setHours(0, 0, 0, 0);
+    return nd;
+  }
+
+  // ✅ LIMITES DE DEVOLUCIÓN DINÁMICOS
+  onFechaPrestamoChange() {
+    if (!this.fechaPrestamoModel) {
+      this.minDevolucion = null;
+      this.maxDevolucion = null;
+      this.fechaDevolucionModel = null;
+      return;
+    }
+
+    const start = this.normalizeDate(this.fechaPrestamoModel);
+
+    this.minDevolucion = new Date(start);
+
+    const max = new Date(start);
+    max.setDate(max.getDate() + 14);
+    this.maxDevolucion = max;
+
+    if (this.fechaDevolucionModel) {
+      const end = this.normalizeDate(this.fechaDevolucionModel);
+      if (end < this.minDevolucion) this.fechaDevolucionModel = new Date(this.minDevolucion);
+      if (end > this.maxDevolucion) this.fechaDevolucionModel = new Date(this.maxDevolucion);
+    }
+  }
+
+  // ✅ GUARDAR SIN TIMEZONE
+  private toIsoLocal(date: Date | null): string | undefined {
+    if (!date) return undefined;
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   onSave() {
+
     if (!this.prestamo.clienteId && this.clienteCtrl.value) {
       const val = this.clienteCtrl.value;
       const name = typeof val === 'string' ? val : val.name;
       const found = this.clientes.find(c => c.name.toLowerCase() === name?.toLowerCase());
       if (found) this.prestamo.clienteId = found.id;
     }
+
     if (!this.prestamo.gameId && this.gameCtrl.value) {
       const val = this.gameCtrl.value;
       const title = typeof val === 'string' ? val : val.title;
@@ -167,7 +207,7 @@ export class PrestamoEditComponent implements OnInit {
       if (found) this.prestamo.gameId = found.id;
     }
 
-    // validaciones
+    // VALIDACIONES
     if (!this.prestamo.gameId) {
       this.error = 'Debes seleccionar un juego';
       return;
@@ -189,9 +229,21 @@ export class PrestamoEditComponent implements OnInit {
       return;
     }
 
-    // convertir fechas
-    this.prestamo.fechaPrestamo = this.toIsoDate(this.fechaPrestamoModel) || '';
-    this.prestamo.fechaDevolucion = this.toIsoDate(this.fechaDevolucionModel);
+    // ✅ Validación final de 14 días
+    if (this.fechaPrestamoModel && this.fechaDevolucionModel) {
+      const start = this.normalizeDate(this.fechaPrestamoModel).getTime();
+      const end = this.normalizeDate(this.fechaDevolucionModel).getTime();
+      const diff = Math.floor((end - start) / (24 * 60 * 60 * 1000));
+
+      if (diff > 14) {
+        this.error = 'El préstamo no puede superar los 14 días de duración';
+        return;
+      }
+    }
+
+    // ✅ GUARDAR FECHAS CORRECTAS SIN TZ
+    this.prestamo.fechaPrestamo = this.toIsoLocal(this.fechaPrestamoModel) || '';
+    this.prestamo.fechaDevolucion = this.toIsoLocal(this.fechaDevolucionModel);
 
     this.servicePrestamo.savePrestamo(this.prestamo).subscribe(
       () => {
@@ -209,3 +261,4 @@ export class PrestamoEditComponent implements OnInit {
     this.dialogRef.close();
   }
 }
+``
