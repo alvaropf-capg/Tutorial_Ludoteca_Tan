@@ -14,11 +14,24 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { ServicePrestamo } from "../service-prestamo";
 import { ServiceGame } from "../../game/service-game";
 import { ServiceCliente } from "../../cliente/service-cliente";
-import { provideNativeDateAdapter } from "@angular/material/core";
+import { provideNativeDateAdapter, MAT_DATE_FORMATS, MatDateFormats } from "@angular/material/core";
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { PrestamoCreate } from "../model/PrestamoCreate";
 import { map, Observable, startWith } from "rxjs";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+
+//Formato fecha DD/MM/YYYY
+export const ES_DATE_FORMATS: MatDateFormats = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  }
+};
 
 @Component({
   selector: 'app-prestamo-edit',
@@ -36,7 +49,8 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
     MatAutocompleteModule
   ],
   providers: [
-    provideNativeDateAdapter()
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_FORMATS, useValue: ES_DATE_FORMATS }
   ],
 
   templateUrl: './prestamo-edit.html',
@@ -48,15 +62,17 @@ export class PrestamoEditComponent implements OnInit {
   clientes: Cliente[] = [];
   games: Game[] = [];
 
+  //Autocompletado
   clienteCtrl = new FormControl<string | Cliente>('');
   gameCtrl = new FormControl<string | Game>('');
 
+  //Listas filtradas
   filteredClientes$!: Observable<Cliente[]>;
   filteredGames$!: Observable<Game[]>;
 
+  //Fechas
   fechaPrestamoModel: Date | null = null;
   fechaDevolucionModel: Date | null = null;
-
   minDevolucion: Date | null = null;
   maxDevolucion: Date | null = null;
 
@@ -86,7 +102,7 @@ export class PrestamoEditComponent implements OnInit {
       this.prestamo = new PrestamoCreate();
     }
 
-    // ✅ PARSEAR FECHAS SIN TIMEZONE
+    // Parsear fechas
     if (this.prestamo.fechaPrestamo) {
       this.fechaPrestamoModel = this.parseDateLocal(this.prestamo.fechaPrestamo);
     }
@@ -94,12 +110,12 @@ export class PrestamoEditComponent implements OnInit {
       this.fechaDevolucionModel = this.parseDateLocal(this.prestamo.fechaDevolucion);
     }
 
-    // ✅ Inicializar límites de devolución si aplica
+    // inicializar limites
     if (this.fechaPrestamoModel) {
       this.onFechaPrestamoChange();
     }
 
-    // Cargar clientes
+    // cargar clientes
     this.serviceCliente.getClientes().subscribe((clientes) => {
       this.clientes = clientes;
 
@@ -114,7 +130,7 @@ export class PrestamoEditComponent implements OnInit {
       );
     });
 
-    // Cargar juegos
+    // cargar juegos
     this.serviceGame.getAllGames().subscribe((games) => {
       this.games = games;
 
@@ -130,35 +146,36 @@ export class PrestamoEditComponent implements OnInit {
     });
   }
 
-  // ✅ CREAR FECHA SIN DESPLAZAMIENTO POR ZONA HORARIA
+  // parsea fecha
   private parseDateLocal(dateString: string): Date {
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
   }
 
+  //Filtros autocompletar
   private _filterClientes(value: string | Cliente): Cliente[] {
     const text = typeof value === 'string' ? value : value?.name ?? '';
-    return this.clientes.filter(c => c.name.toLowerCase().includes(text.toLowerCase()));
+    return this.clientes.filter(cliente => cliente.name.toLowerCase().includes(text.toLowerCase()));
   }
 
   private _filterGames(value: string | Game): Game[] {
     const text = typeof value === 'string' ? value : value?.title ?? '';
-    return this.games.filter(g => g.title.toLowerCase().includes(text.toLowerCase()));
+    return this.games.filter(game => game.title.toLowerCase().includes(text.toLowerCase()));
   }
 
-  displayCliente = (c?: Cliente | string): string =>
-    !c ? '' : typeof c === 'string' ? c : c.name;
+  displayCliente = (cliente?: Cliente | string): string =>
+    !cliente ? '' : typeof cliente === 'string' ? cliente : cliente.name;
 
-  displayGame = (g?: Game | string): string =>
-    !g ? '' : typeof g === 'string' ? g : g.title;
+  displayGame = (game?: Game | string): string =>
+    !game ? '' : typeof game === 'string' ? game : game.title;
 
-  private normalizeDate(d: Date): Date {
-    const nd = new Date(d);
+  private normalizeDate(date: Date): Date {
+    const nd = new Date(date);
     nd.setHours(0, 0, 0, 0);
     return nd;
   }
 
-  // ✅ LIMITES DE DEVOLUCIÓN DINÁMICOS
+  // limites de devolucion
   onFechaPrestamoChange() {
     if (!this.fechaPrestamoModel) {
       this.minDevolucion = null;
@@ -182,7 +199,7 @@ export class PrestamoEditComponent implements OnInit {
     }
   }
 
-  // ✅ GUARDAR SIN TIMEZONE
+  // devuelve YYYY-MM-DD
   private toIsoLocal(date: Date | null): string | undefined {
     if (!date) return undefined;
     const y = date.getFullYear();
@@ -193,6 +210,7 @@ export class PrestamoEditComponent implements OnInit {
 
   onSave() {
 
+    // resolver ids de autocompletar
     if (!this.prestamo.clienteId && this.clienteCtrl.value) {
       const val = this.clienteCtrl.value;
       const name = typeof val === 'string' ? val : val.name;
@@ -207,7 +225,7 @@ export class PrestamoEditComponent implements OnInit {
       if (found) this.prestamo.gameId = found.id;
     }
 
-    // VALIDACIONES
+    // validaciones
     if (!this.prestamo.gameId) {
       this.error = 'Debes seleccionar un juego';
       return;
@@ -220,28 +238,23 @@ export class PrestamoEditComponent implements OnInit {
       this.error = 'Debes indicar la fecha de préstamo';
       return;
     }
-    if (this.fechaPrestamoModel > new Date()) {
-      this.error = 'La fecha de préstamo no puede ser en el futuro';
-      return;
-    }
     if (this.fechaDevolucionModel && this.fechaDevolucionModel < this.fechaPrestamoModel) {
       this.error = 'La fecha de devolución debe ser posterior a la de préstamo';
       return;
     }
 
-    // ✅ Validación final de 14 días
+    // validacion de maximo 14 días
     if (this.fechaPrestamoModel && this.fechaDevolucionModel) {
       const start = this.normalizeDate(this.fechaPrestamoModel).getTime();
       const end = this.normalizeDate(this.fechaDevolucionModel).getTime();
       const diff = Math.floor((end - start) / (24 * 60 * 60 * 1000));
-
       if (diff > 14) {
         this.error = 'El préstamo no puede superar los 14 días de duración';
         return;
       }
     }
 
-    // ✅ GUARDAR FECHAS CORRECTAS SIN TZ
+    // guardar fechas
     this.prestamo.fechaPrestamo = this.toIsoLocal(this.fechaPrestamoModel) || '';
     this.prestamo.fechaDevolucion = this.toIsoLocal(this.fechaDevolucionModel);
 
@@ -261,4 +274,3 @@ export class PrestamoEditComponent implements OnInit {
     this.dialogRef.close();
   }
 }
-``

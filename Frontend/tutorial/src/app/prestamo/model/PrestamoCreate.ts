@@ -1,4 +1,4 @@
-import { Prestamo } from './Prestamo';
+
 export class PrestamoCreate {
   id?: number;
   gameId: number;

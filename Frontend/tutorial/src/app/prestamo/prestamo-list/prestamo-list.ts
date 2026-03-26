@@ -6,8 +6,8 @@ import { ServicePrestamo } from '../service-prestamo';
 import { MatDialog } from '@angular/material/dialog';
 import { PrestamoEditComponent } from '../prestamo-edit/prestamo-edit';
 import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatInput, MatInputModule } from "@angular/material/input";
-import { FormsModule, NgModel } from '@angular/forms';
+import { MatInputModule } from "@angular/material/input";
+import { FormsModule } from '@angular/forms';
 import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
@@ -41,7 +41,7 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
 })
 export class PrestamoListComponent implements OnInit {
 
-  // FILTROS
+  // filtros
   filterGameTitle: string = '';
   filterClienteName: string = '';
   filterFechaPrestamoFrom: Date | null = null;
@@ -57,6 +57,7 @@ export class PrestamoListComponent implements OnInit {
 
   totalElements = 0;
 
+  //tabla y columnas
   dataSource = new MatTableDataSource<Prestamo>();
   displayedColumns: string[] = ['id', 'nombreCliente', 'nombreGame', 'fechaPrestamo', 'fechaDevolucion', 'action'];
 
@@ -70,6 +71,7 @@ export class PrestamoListComponent implements OnInit {
   }
 
   loadPage(event?: PageEvent) {
+    //actualiza paginacion si cambia de pagina
     if (event) {
       this.search.pageable.pageNumber = event.pageIndex;
       this.search.pageable.pageSize = event.pageSize;
@@ -83,18 +85,17 @@ export class PrestamoListComponent implements OnInit {
     });
   }
 
+  //para el boton de fitlrar
   applyFilters() {
     this.search.gameTitle = this.filterGameTitle || undefined;
     this.search.clienteName = this.filterClienteName || undefined;
-    this.search.fechaPrestamoFrom = this.filterFechaPrestamoFrom ?
-      this.filterFechaPrestamoFrom.toISOString().split('T')[0] : undefined;
-    this.search.fechaPrestamoTo = this.filterFechaPrestamoTo ?
-      this.filterFechaPrestamoTo.toISOString().split('T')[0] : undefined;
-
+    this.search.fechaPrestamoFrom = this.filterFechaPrestamoFrom ? this.filterFechaPrestamoFrom.toISOString().split('T')[0] : undefined;
+    this.search.fechaPrestamoTo = this.filterFechaPrestamoTo ? this.filterFechaPrestamoTo.toISOString().split('T')[0] : undefined;
     this.search.pageable.pageNumber = 0;
     this.loadPage();
   }
 
+  //para el boton de limpair filtros
   cleanFilters() {
     this.filterGameTitle = '';
     this.filterClienteName = '';

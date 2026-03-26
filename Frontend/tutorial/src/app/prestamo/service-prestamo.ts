@@ -3,7 +3,6 @@ import { PrestamoPage } from './model/PrestamoPage';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { PrestamoSearch } from './model/PrestamoSearch';
-import { Prestamo } from './model/Prestamo';
 import { PrestamoCreate } from './model/PrestamoCreate';
 
 @Injectable({
@@ -17,7 +16,7 @@ export class ServicePrestamo {
 
   getPrestamos(search: PrestamoSearch): Observable<PrestamoPage> {
 
-  return this.http.post<PrestamoPage>(this.baseUrl, search);
+    return this.http.post<PrestamoPage>(this.baseUrl, search);
   }
 
   savePrestamo(prestamo: PrestamoCreate): Observable<void> {

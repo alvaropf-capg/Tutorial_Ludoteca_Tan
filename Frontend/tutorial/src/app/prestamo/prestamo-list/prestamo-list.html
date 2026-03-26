@@ -63,37 +63,37 @@
   <!-- Tabla -->
   <mat-table [dataSource]="dataSource">
 
-    <!-- ID -->
+    <!-- Id -->
     <ng-container matColumnDef="id">
       <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.id }} </mat-cell>
     </ng-container>
 
-    <!-- CLIENTE -->
+    <!-- Cliente -->
     <ng-container matColumnDef="nombreCliente">
       <mat-header-cell *matHeaderCellDef> Cliente </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.nombreCliente }} </mat-cell>
     </ng-container>
 
-    <!-- JUEGO -->
+    <!-- Juego -->
     <ng-container matColumnDef="nombreGame">
       <mat-header-cell *matHeaderCellDef> Juego </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.nombreGame }} </mat-cell>
     </ng-container>
 
-    <!-- FECHA PRESTAMO -->
+    <!-- Fecha Prestamo -->
     <ng-container matColumnDef="fechaPrestamo">
       <mat-header-cell *matHeaderCellDef> Préstamo </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.fechaPrestamo }} </mat-cell>
     </ng-container>
 
-    <!-- FECHA DEVOLUCION -->
+    <!-- Fecha devolucion -->
     <ng-container matColumnDef="fechaDevolucion">
       <mat-header-cell *matHeaderCellDef> Devolución </mat-header-cell>
       <mat-cell *matCellDef="let e"> {{ e.fechaDevolucion }} </mat-cell>
     </ng-container>
 
-    <!-- ACCIONES -->
+    <!-- editar/borrar -->
     <ng-container matColumnDef="action">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let e">

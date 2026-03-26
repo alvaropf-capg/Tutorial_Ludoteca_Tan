@@ -24,14 +24,14 @@
         [formControl]="clienteCtrl"
         placeholder="Escribe para buscar cliente"
         required
-      />
+        />
       <mat-autocomplete
         #autoCliente="matAutocomplete"
         [displayWith]="displayCliente"
         (optionSelected)="prestamo.clienteId = $event.option.value.id"
-      >
-        @for (c of (filteredClientes$ | async); track c.id) {
-          <mat-option [value]="c">{{ c.name }}</mat-option>
+        >
+        @for (cliente of (filteredClientes$ | async); track cliente.id) {
+          <mat-option [value]="cliente">{{ cliente.name }}</mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
@@ -52,8 +52,8 @@
         [displayWith]="displayGame"
         (optionSelected)="prestamo.gameId = $event.option.value.id"
       >
-        @for (g of (filteredGames$ | async); track g.id) {
-          <mat-option [value]="g">{{ g.title }}</mat-option>
+        @for (game of (filteredGames$ | async); track game.id) {
+          <mat-option [value]="game">{{ game.title }}</mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
@@ -68,7 +68,7 @@
         name="fechaInicio"
         placeholder="Selecciona fecha de inicio"
         required
-        (dateChange)="onFechaPrestamoChange()"   
+        (dateChange)="onFechaPrestamoChange()"
       />
       <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
       <mat-datepicker #pickerInicio></mat-datepicker>

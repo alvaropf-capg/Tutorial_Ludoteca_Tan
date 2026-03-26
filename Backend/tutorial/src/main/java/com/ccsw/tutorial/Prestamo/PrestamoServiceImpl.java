@@ -1,14 +1,12 @@
 package com.ccsw.tutorial.Prestamo;
 
 import com.ccsw.tutorial.Cliente.ClienteRepository;
-import com.ccsw.tutorial.Cliente.ClienteService;
 import com.ccsw.tutorial.Prestamo.model.Prestamo;
 import com.ccsw.tutorial.Prestamo.model.PrestamoCreateDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoDto;
 import com.ccsw.tutorial.Prestamo.model.PrestamoSearchDto;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.GameRepository;
-import com.ccsw.tutorial.game.GameService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +18,7 @@ import java.time.LocalDate;
 /**
  * @author alperezf
  */
+
 @Service
 @Transactional
 public class PrestamoServiceImpl implements PrestamoService {
@@ -33,148 +32,97 @@ public class PrestamoServiceImpl implements PrestamoService {
     @Autowired
     ClienteRepository clienteRepository;
 
-    @Autowired
-    GameService gameService;
-
-    @Autowired
-    ClienteService clienteService;
-
-    /**
-     * {@inheritDoc}
-     */
+    // busqueda por filtros
     @Override
     public Page<PrestamoDto> findPage(PrestamoSearchDto dto) {
 
-        Specification<Prestamo> spec = null; //variable para acumular los filtros
+        Specification<Prestamo> spec = null; //Creamos specification vacia
 
-        // FILTRO POR TÍTULO DEL JUEGO
-        if (dto.getGameTitle() != null && !dto.getGameTitle().isEmpty()) { //verifica si hay valor
-            Specification<Prestamo> tituloSpec = new PrestamoSpecification(new SearchCriteria("game.title", ":", dto.getGameTitle())); //crea specificatio y busca en game.title
-            spec = (spec == null) ? tituloSpec : spec.and(tituloSpec);  //acumula el filtro
+        if (dto.getGameTitle() != null && !dto.getGameTitle().isEmpty()) {
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("game.title", ":", dto.getGameTitle())); //aplicamos filtro
+            spec = (spec == null) ? s : spec.and(s);
         }
 
-        // FILTRO POR NOMBRE DEL CLIENTE
         if (dto.getClienteName() != null && !dto.getClienteName().isEmpty()) {
-            Specification<Prestamo> clienteSpec = new PrestamoSpecification(new SearchCriteria("cliente.name", ":", dto.getClienteName()));
-            spec = (spec == null) ? clienteSpec : spec.and(clienteSpec);
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("cliente.name", ":", dto.getClienteName()));
+            spec = (spec == null) ? s : spec.and(s);
         }
 
-        // FILTRO POR RANGO DE FECHA DE PRÉSTAMO
         if (dto.getFechaPrestamoFrom() != null) {
-            Specification<Prestamo> fechaFromSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", ">=", dto.getFechaPrestamoFrom()));
-            spec = (spec == null) ? fechaFromSpec : spec.and(fechaFromSpec);
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", ">=", dto.getFechaPrestamoFrom()));
+            spec = (spec == null) ? s : spec.and(s);
         }
 
         if (dto.getFechaPrestamoTo() != null) {
-            Specification<Prestamo> fechaToSpec = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", "<=", dto.getFechaPrestamoTo()));
-            spec = (spec == null) ? fechaToSpec : spec.and(fechaToSpec);
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("fechaPrestamo", "<=", dto.getFechaPrestamoTo()));
+            spec = (spec == null) ? s : spec.and(s);
         }
 
-        // FILTRO POR RANGO DE FECHA DE DEVOLUCIÓN
         if (dto.getFechaDevolucionFrom() != null) {
-            Specification<Prestamo> fechaDevFromSpec = new PrestamoSpecification(new SearchCriteria("fechaDevolucion", ">=", dto.getFechaDevolucionFrom()));
-            spec = (spec == null) ? fechaDevFromSpec : spec.and(fechaDevFromSpec);
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("fechaDevolucion", ">=", dto.getFechaDevolucionFrom()));
+            spec = (spec == null) ? s : spec.and(s);
         }
 
         if (dto.getFechaDevolucionTo() != null) {
-            Specification<Prestamo> fechaDevToSpec = new PrestamoSpecification(new SearchCriteria("fechaDevolucion", "<=", dto.getFechaDevolucionTo()));
-            spec = (spec == null) ? fechaDevToSpec : spec.and(fechaDevToSpec);
+            Specification<Prestamo> s = new PrestamoSpecification(new SearchCriteria("fechaDevolucion", "<=", dto.getFechaDevolucionTo()));
+            spec = (spec == null) ? s : spec.and(s);
         }
 
-        Page<Prestamo> page;
-        if (spec != null) {
-            page = this.prestamoRepository.findAll(spec, dto.getPageable().getPageable());
-        } else {
-            // Si no hay filtros, simplemente busca todos
-            page = this.prestamoRepository.findAll(dto.getPageable().getPageable());
-        }
-        return page.map(this::convertToDto);
+        Page<Prestamo> page = (spec == null) ? prestamoRepository.findAll(dto.getPageable().getPageable()) : prestamoRepository.findAll(spec, dto.getPageable().getPageable());
+
+        //Si no hay filtros usa un finall(pageable), si hay filtros utiliza un findall(spec, pageable)
+
+        return page.map(this::convertToDto); //convierte las entidades a dtos
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void save(Long id, PrestamoCreateDto data) {
-
-        validatePrestamo(data);
-
-        Prestamo prestamo;
-
-        if (id == null) {
-            prestamo = new Prestamo();
-        } else {
-            prestamo = this.prestamoRepository.findById(id).orElse(null);
-        }
-
-        prestamo.setGame(gameRepository.findById(data.getGameId()).get());
-        prestamo.setCliente(clienteRepository.findById(data.getClienteId()).get());
-        prestamo.setFechaPrestamo(data.getFechaPrestamo());
-        prestamo.setFechaDevolucion(data.getFechaDevolucion());
-
-        this.prestamoRepository.save(prestamo);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void delete(Long id) throws Exception {
-        Prestamo prestamo = this.prestamoRepository.findById(id).orElse(null);
-
-        if (prestamo == null) {
-            throw new Exception("Prestamo not exists");
-        }
-
-        this.prestamoRepository.deleteById(id);
-    }
-
-    /**
-     * Convierte una entidad Prestamo a PrestamoDto
-     */
-    private PrestamoDto convertToDto(Prestamo prestamo) {
+    // mapear entidad
+    private PrestamoDto convertToDto(Prestamo p) {
         PrestamoDto dto = new PrestamoDto();
-        dto.setId(prestamo.getId());
-        dto.setNombreGame(prestamo.getGame().getTitle());
-        dto.setNombreCliente(prestamo.getCliente().getName());
-        dto.setFechaPrestamo(prestamo.getFechaPrestamo().toString());
-        if (prestamo.getFechaDevolucion() != null) {
-            dto.setFechaDevolucion(prestamo.getFechaDevolucion().toString());
-        }
+        dto.setId(p.getId());
+        dto.setNombreGame(p.getGame().getTitle());
+        dto.setNombreCliente(p.getCliente().getName());
+        dto.setFechaPrestamo(p.getFechaPrestamo().toString());
+        if (p.getFechaDevolucion() != null)
+            dto.setFechaDevolucion(p.getFechaDevolucion().toString());
         return dto;
     }
 
-    /**
-     * Valida reglas de negocio del Prestamo
-     */
-    private void validatePrestamo(PrestamoCreateDto dto) {
+    @Override
+    public void save(Long id, PrestamoCreateDto dto) {
 
-        // Validación 1: Game es obligatorio
-        if (dto.getGameId() == null) {
-            throw new IllegalArgumentException("El juego es obligatorio");
-        }
+        //procesar fechas
+        LocalDate inicio = dto.getFechaPrestamo();
+        LocalDate fin = (dto.getFechaDevolucion() != null) ? dto.getFechaDevolucion() : inicio;
+        //VALIDACIONES
+        // el juego no puede solaparse con otro prestamo del mismo
 
-        // Validación 2: Cliente es obligatorio
-        if (dto.getClienteId() == null) {
-            throw new IllegalArgumentException("El cliente es obligatorio");
-        }
+        Specification<Prestamo> specJuego = Specification.allOf(PrestamoSpecification.overlaps(inicio, fin), PrestamoSpecification.sameGame(dto.getGameId()), PrestamoSpecification.excludeId(id));
 
-        // Validación 3: Fecha préstamo es obligatoria
-        if (dto.getFechaPrestamo() == null) {
-            throw new IllegalArgumentException("La fecha de préstamo es obligatoria");
-        }
+        if (prestamoRepository.count(specJuego) > 0)
+            throw new IllegalArgumentException("El juego ya está prestado en ese rango de fechas.");
 
-        // Validación 4: Fecha préstamo no puede ser en el futuro
-        if (dto.getFechaPrestamo().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de préstamo no puede ser en el futuro");
-        }
+        // no mas de 2 prestamos por cliente
+        Specification<Prestamo> specCliente = Specification.allOf(PrestamoSpecification.overlaps(inicio, fin), PrestamoSpecification.sameCliente(dto.getClienteId()), PrestamoSpecification.excludeId(id));
 
-        // Validación 5: Si hay fecha devolución, debe ser después o igual a la de préstamo
-        if (dto.getFechaDevolucion() != null && dto.getFechaDevolucion().isBefore(dto.getFechaPrestamo())) {
-            throw new IllegalArgumentException("La fecha de devolución debe ser posterior o igual a la de préstamo");
-        }
+        if (prestamoRepository.count(specCliente) >= 2)
+            throw new IllegalArgumentException("El cliente ya tiene 2 préstamos activos en ese rango.");
 
-        // Validación 6: El juego no puede tener otro préstamo activo sin devolver
-        // (Esto dependerá de tu lógica de negocio)
+        // crear o actualizarel prestamo
+        Prestamo prestamo = (id == null) ? new Prestamo() : prestamoRepository.findById(id).orElseThrow();
+
+        //asignar juego, cliente y fecha
+        prestamo.setGame(gameRepository.findById(dto.getGameId()).orElseThrow());
+        prestamo.setCliente(clienteRepository.findById(dto.getClienteId()).orElseThrow());
+        prestamo.setFechaPrestamo(dto.getFechaPrestamo());
+        prestamo.setFechaDevolucion(dto.getFechaDevolucion());
+
+        //guradar prestamo
+        prestamoRepository.save(prestamo);
+    }
+
+    // elimnar prestamo
+    @Override
+    public void delete(Long id) throws Exception {
+        prestamoRepository.deleteById(id);
     }
 }

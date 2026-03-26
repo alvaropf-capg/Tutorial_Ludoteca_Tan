@@ -40,7 +40,7 @@ public class ClienteServiceImpl implements ClienteService {
             cliente = this.clienteRepository.findById(id).orElse(null);
         }
 
-        cliente.setName(dto.getName().toLowerCase());
+        cliente.setName(dto.getName());
         this.clienteRepository.save(cliente);
     }
 
